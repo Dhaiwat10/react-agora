@@ -37,12 +37,23 @@ class Stream {
     localPlayerContainer.style.width = '640px';
     localPlayerContainer.style.height = '480px';
     document.body.append(localPlayerContainer);
+    this.localVideoTrack.play(localPlayerContainer);
   }
 
   async leave() {
     this.localAudioTrack?.close();
     this.localVideoTrack?.close();
+    // TODO: Destroy local stream container
+    const localPlayerContainer = document.getElementById(
+      this.userId.toString()
+    );
+    localPlayerContainer && localPlayerContainer.remove();
     // TODO: Destroy all remote streams
+    this.client.remoteUsers.forEach((user) => {
+      // Destroy the dynamically created DIV containers.
+      const playerContainer = document.getElementById(user.uid.toString());
+      playerContainer && playerContainer.remove();
+    });
     await this.client.leave();
   }
 

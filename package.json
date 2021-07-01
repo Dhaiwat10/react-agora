@@ -1,6 +1,10 @@
 {
   "version": "0.1.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dhaiwat10/react-agora"
+  },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -36,7 +40,11 @@
     "trailingComma": "es5"
   },
   "name": "react-agora",
-  "author": "dhaiwat10",
+  "author": {
+    "name": "Dhaiwat Pandya",
+    "email": "dhaiwatpandya@gmail.com",
+    "url": "https://dhaiwatpandya.com"
+  },
   "module": "dist/react-agora.esm.js",
   "size-limit": [
     {
