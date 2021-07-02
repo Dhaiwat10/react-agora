@@ -8,6 +8,7 @@ import AgoraRTC, {
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
 class Stream {
+  joined: boolean;
   client: IAgoraRTCClient;
   appId: string;
   channelId: string;
@@ -17,30 +18,37 @@ class Stream {
   localVideoTrack: ILocalVideoTrack | null = null;
 
   constructor(appId: string, channelId: string, userId: number, token: string) {
+    this.joined = false;
     this.appId = appId;
     this.channelId = channelId;
     this.userId = userId;
     this.token = token;
     this.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
     this.client.on('user-published', this.onUserPublished);
+    this.client.on('user-unpublished', this.onUserUnpublished);
   }
 
-  async join() {
+  join = async () => {
+    this.joined = true;
     await this.client.join(this.appId, this.channelId, this.token, this.userId);
     this.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
     this.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
     await this.client.publish([this.localAudioTrack, this.localVideoTrack]);
+    console.log('Logging client after publishing', this.client);
     // TODO: Create video container on the DOM
     const localPlayerContainer = document.createElement('div');
     localPlayerContainer.id = this.userId.toString();
     localPlayerContainer.textContent = 'Local user ' + this.userId;
-    localPlayerContainer.style.width = '640px';
-    localPlayerContainer.style.height = '480px';
-    document.body.append(localPlayerContainer);
+    localPlayerContainer.style.width = '20vw';
+    localPlayerContainer.style.height = '11.25vw';
+    document
+      .getElementsByClassName('agora-streams')[0]
+      .append(localPlayerContainer);
     this.localVideoTrack.play(localPlayerContainer);
-  }
+  };
 
-  async leave() {
+  leave = async () => {
+    this.joined = false;
     this.localAudioTrack?.close();
     this.localVideoTrack?.close();
     // TODO: Destroy local stream container
@@ -55,12 +63,12 @@ class Stream {
       playerContainer && playerContainer.remove();
     });
     await this.client.leave();
-  }
+  };
 
-  async onUserPublished(
+  onUserPublished = async (
     user: IAgoraRTCRemoteUser,
     mediaType: 'video' | 'audio'
-  ) {
+  ) => {
     await this.client.subscribe(user, mediaType);
 
     if (mediaType === 'video') {
@@ -68,9 +76,11 @@ class Stream {
       const remotePlayerContainer = document.createElement('div');
       remotePlayerContainer.id = user.uid.toString();
       remotePlayerContainer.textContent = 'Remote user ' + user.uid.toString();
-      remotePlayerContainer.style.width = '640px';
-      remotePlayerContainer.style.height = '480px';
-      document.body.append(remotePlayerContainer);
+      remotePlayerContainer.style.width = '20vw';
+      remotePlayerContainer.style.height = '11.25vw';
+      document
+        .getElementsByClassName('agora-streams')[0]
+        .append(remotePlayerContainer);
       remoteVideoTrack!.play(remotePlayerContainer);
     }
 
@@ -78,12 +88,12 @@ class Stream {
       const remoteAudioTrack = user.audioTrack;
       remoteAudioTrack!.play();
     }
-  }
+  };
 
-  async onUserUnpublished(user: IAgoraRTCRemoteUser) {
+  onUserUnpublished = (user: IAgoraRTCRemoteUser) => {
     const remotePlayerContainer = document.getElementById(user.uid.toString());
     remotePlayerContainer!.remove();
-  }
+  };
 }
 
 const generateToken = (

@@ -1,25 +1,6 @@
-import React, {
-  FC,
-  HTMLAttributes,
-  ReactChild,
-  useEffect,
-  useState,
-} from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { generateToken, Stream } from './lib/agora';
-
-export interface Props extends HTMLAttributes<HTMLDivElement> {
-  /** custom content, defaults to 'the snozzberries taste like snozzberries' */
-  children?: ReactChild;
-}
-
-// Please do not use types off of a default export module or else Storybook Docs will suffer.
-// see: https://github.com/storybookjs/storybook/issues/9556
-/**
- * A custom Thing component. Neat!
- */
-export const Thing: FC<Props> = ({ children }) => {
-  return <div>{children || `the snozzberries taste like snozzberries`}</div>;
-};
+import './index.css';
 
 export interface VideoCallProps {
   appId: string;
@@ -35,6 +16,7 @@ export const VideoCall: FC<VideoCallProps> = ({
   channelId,
 }) => {
   const [stream, setStream] = useState<Stream>();
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     const newStream = new Stream(
@@ -46,12 +28,44 @@ export const VideoCall: FC<VideoCallProps> = ({
     setStream(newStream);
   }, [appId, userId, channelId]);
 
+  useEffect(() => {
+    setClicked(false);
+  }, [stream?.joined]);
+
+  const handleLeave = () => {
+    setClicked(true);
+    stream!.leave();
+  };
+
+  const handleJoin = () => {
+    setClicked(true);
+    stream!.join();
+  };
+
   if (stream) {
     return (
-      <div>
-        <h1>Hello</h1>
-        <button onClick={() => stream.join()}>Join</button>
-        <button onClick={() => stream.leave()}>Leave</button>
+      <div className="agora-container">
+        <div
+          className="agora-streams"
+          style={{ marginBottom: stream?.joined ? '50px' : '0' }}
+        ></div>
+        {stream.joined ? (
+          <button
+            disabled={clicked}
+            className="button leave-btn"
+            onClick={handleLeave}
+          >
+            Leave
+          </button>
+        ) : (
+          <button
+            disabled={clicked}
+            className="button join-btn"
+            onClick={handleJoin}
+          >
+            Join
+          </button>
+        )}
       </div>
     );
   } else {

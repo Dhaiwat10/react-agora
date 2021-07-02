@@ -1,0 +1,29 @@
+.agora-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.agora-streams {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.button {
+  width: fit-content;
+  border-radius: 10px;
+  padding: 10px 30px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.leave-btn {
+  color: white;
+  background-color: rgb(175, 48, 48);
+}
+
+.join-btn {
+  color: black;
+}
