@@ -1,3 +1,4 @@
 - [ ] Handle error cases
 - [ ] Screen share
 - [ ] Mute/unmute yourself
+- [ ] CI/CD

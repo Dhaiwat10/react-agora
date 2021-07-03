@@ -98,5 +98,13 @@
   "dependencies": {
     "agora-access-token": "^2.0.4",
     "agora-rtc-sdk-ng": "^4.5.0"
-  }
+  },
+  "keywords": [
+    "react",
+    "react-agora",
+    "agora",
+    "agorartc",
+    "agoraio"
+  ],
+  "description": "A React wrapper for AgoraRTC Video."
 }
