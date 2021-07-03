@@ -53,6 +53,15 @@ export const VideoCall: FC<VideoCallProps> = ({
     setClicked(false);
   }, [stream?.selfMuted]);
 
+  if (!appId || !appCertificate || !channelId || !userId) {
+    return (
+      <div>
+        Incorrect config. Please verify that you provided all of these: appId,
+        appCertificate, channelId, userId.
+      </div>
+    );
+  }
+
   if (stream) {
     return (
       <div className="agora-container">
