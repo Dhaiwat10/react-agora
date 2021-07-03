@@ -8,6 +8,7 @@ import AgoraRTC, {
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
 class Stream {
+  selfMuted: boolean;
   joined: boolean;
   client: IAgoraRTCClient;
   appId: string;
@@ -18,6 +19,7 @@ class Stream {
   localVideoTrack: ILocalVideoTrack | null = null;
 
   constructor(appId: string, channelId: string, userId: number, token: string) {
+    this.selfMuted = false;
     this.joined = false;
     this.appId = appId;
     this.channelId = channelId;
@@ -92,7 +94,12 @@ class Stream {
 
   onUserUnpublished = (user: IAgoraRTCRemoteUser) => {
     const remotePlayerContainer = document.getElementById(user.uid.toString());
-    remotePlayerContainer!.remove();
+    remotePlayerContainer && remotePlayerContainer.remove();
+  };
+
+  toggleMuteSelf = () => {
+    this.localAudioTrack?.setVolume(this.selfMuted ? 100 : 0);
+    this.selfMuted = !this.selfMuted;
   };
 }
 

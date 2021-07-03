@@ -32,15 +32,26 @@ export const VideoCall: FC<VideoCallProps> = ({
     setClicked(false);
   }, [stream?.joined]);
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
     setClicked(true);
-    stream!.leave();
+    await stream!.leave();
+    setClicked(false);
   };
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     setClicked(true);
-    stream!.join();
+    await stream!.join();
+    setClicked(false);
   };
+
+  const handleSelfMute = () => {
+    setClicked(true);
+    stream!.toggleMuteSelf();
+  };
+
+  useEffect(() => {
+    setClicked(false);
+  }, [stream?.selfMuted]);
 
   if (stream) {
     return (
@@ -64,6 +75,15 @@ export const VideoCall: FC<VideoCallProps> = ({
             onClick={handleJoin}
           >
             Join
+          </button>
+        )}
+        {stream.joined && (
+          <button
+            disabled={clicked}
+            onClick={handleSelfMute}
+            className="button mute-btn"
+          >
+            {stream.selfMuted ? 'Unmute' : 'Mute'}
           </button>
         )}
       </div>
