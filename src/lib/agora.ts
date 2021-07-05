@@ -1,6 +1,7 @@
 import AgoraRTC, {
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
+  ILocalAudioTrack,
   ILocalVideoTrack,
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng';
@@ -11,21 +12,34 @@ class Stream {
   selfMuted: boolean;
   joined: boolean;
   client: IAgoraRTCClient;
+  screenClient: IAgoraRTCClient;
   appId: string;
+  appCertificate: string;
   channelId: string;
   token: string;
   userId: number;
   localAudioTrack: IMicrophoneAudioTrack | null = null;
   localVideoTrack: ILocalVideoTrack | null = null;
+  screenVideoTrack: ILocalVideoTrack | null = null;
+  screenAudioTrack: ILocalAudioTrack | null = null;
+  localScreenTrack: [ILocalVideoTrack, ILocalAudioTrack] | null = null;
 
-  constructor(appId: string, channelId: string, userId: number, token: string) {
+  constructor(
+    appId: string,
+    appCertificate: string,
+    channelId: string,
+    userId: number,
+    token: string
+  ) {
     this.selfMuted = false;
     this.joined = false;
     this.appId = appId;
+    this.appCertificate = appCertificate;
     this.channelId = channelId;
     this.userId = userId;
     this.token = token;
     this.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    this.screenClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
     this.client.on('user-published', this.onUserPublished);
     this.client.on('user-unpublished', this.onUserUnpublished);
   }
@@ -90,6 +104,51 @@ class Stream {
       const remoteAudioTrack = user.audioTrack;
       remoteAudioTrack!.play();
     }
+  };
+
+  startScreenShare = async () => {
+    const screenToken = generateToken(
+      this.appId,
+      this.appCertificate,
+      this.channelId,
+      +this.userId + 10
+    );
+    await this.screenClient.join(
+      this.appId,
+      this.channelId,
+      screenToken,
+      +this.userId + 10
+    );
+    const screenTrack = await AgoraRTC.createScreenVideoTrack(
+      {
+        encoderConfig: '1080p_1',
+      },
+      'auto'
+    );
+    // this.localScreenTrack = screenTrack;
+    // this.screenVideoTrack = screenTrack[0];
+    // this.screenAudioTrack = screenTrack[1];
+
+    await this.screenClient.publish(screenTrack);
+    // const localPlayerContainer = document.createElement('div');
+    // localPlayerContainer.id = this.userId.toString();
+    // localPlayerContainer.textContent = 'Local screen ' + this.userId + 10;
+    // localPlayerContainer.style.width = '20vw';
+    // localPlayerContainer.style.height = '11.25vw';
+    // screenTrack[0].play(localPlayerContainer);
+    // screenTrack[1].play();
+  };
+
+  stopScreenShare = async () => {
+    await this.screenClient.unpublish(this.localScreenTrack!);
+    const screenElement = document.getElementById(
+      (this.userId + 10).toString()
+    );
+    screenElement && screenElement?.remove();
+    await this.screenClient.leave();
+
+    this.screenAudioTrack?.close();
+    this.screenVideoTrack?.close();
   };
 
   onUserUnpublished = (user: IAgoraRTCRemoteUser) => {
