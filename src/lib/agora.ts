@@ -123,20 +123,20 @@ class Stream {
       {
         encoderConfig: '1080p_1',
       },
-      'enable'
+      'auto'
     );
-    this.localScreenTrack = screenTrack;
-    this.screenVideoTrack = screenTrack[0];
-    this.screenAudioTrack = screenTrack[1];
+    // this.localScreenTrack = screenTrack;
+    // this.screenVideoTrack = screenTrack[0];
+    // this.screenAudioTrack = screenTrack[1];
 
     await this.screenClient.publish(screenTrack);
-    const localPlayerContainer = document.createElement('div');
-    localPlayerContainer.id = this.userId.toString();
-    localPlayerContainer.textContent = 'Local screen ' + this.userId + 10;
-    localPlayerContainer.style.width = '20vw';
-    localPlayerContainer.style.height = '11.25vw';
-    screenTrack[0].play(localPlayerContainer);
-    screenTrack[1].play();
+    // const localPlayerContainer = document.createElement('div');
+    // localPlayerContainer.id = this.userId.toString();
+    // localPlayerContainer.textContent = 'Local screen ' + this.userId + 10;
+    // localPlayerContainer.style.width = '20vw';
+    // localPlayerContainer.style.height = '11.25vw';
+    // screenTrack[0].play(localPlayerContainer);
+    // screenTrack[1].play();
   };
 
   stopScreenShare = async () => {
