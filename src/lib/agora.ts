@@ -107,17 +107,18 @@ class Stream {
   };
 
   startScreenShare = async () => {
+    const newUserId = +this.userId + 10000;
     const screenToken = generateToken(
       this.appId,
       this.appCertificate,
       this.channelId,
-      +this.userId + 10
+      newUserId
     );
     await this.screenClient.join(
       this.appId,
       this.channelId,
       screenToken,
-      +this.userId + 10
+      newUserId
     );
     const screenTrack = await AgoraRTC.createScreenVideoTrack(
       {
@@ -132,7 +133,7 @@ class Stream {
     await this.screenClient.publish(screenTrack);
     // const localPlayerContainer = document.createElement('div');
     // localPlayerContainer.id = this.userId.toString();
-    // localPlayerContainer.textContent = 'Local screen ' + this.userId + 10;
+    // localPlayerContainer.textContent = 'Local screen ' + this.userId + 10000;
     // localPlayerContainer.style.width = '20vw';
     // localPlayerContainer.style.height = '11.25vw';
     // screenTrack[0].play(localPlayerContainer);
@@ -142,7 +143,7 @@ class Stream {
   stopScreenShare = async () => {
     await this.screenClient.unpublish(this.localScreenTrack!);
     const screenElement = document.getElementById(
-      (this.userId + 10).toString()
+      (this.userId + 10000).toString()
     );
     screenElement && screenElement?.remove();
     await this.screenClient.leave();

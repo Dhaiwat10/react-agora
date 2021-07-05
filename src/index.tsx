@@ -37,7 +37,7 @@ export const VideoCall: FC<VideoCallProps> = ({
 
   const handleLeave = async () => {
     setClicked(true);
-    await handleStopScreenShare()
+    await handleStopScreenShare();
     await stream!.leave();
     setClicked(false);
   };
@@ -62,7 +62,6 @@ export const VideoCall: FC<VideoCallProps> = ({
     setSharingScreen(false);
     await stream!.stopScreenShare();
   };
-
 
   useEffect(() => {
     setClicked(false);
@@ -112,9 +111,13 @@ export const VideoCall: FC<VideoCallProps> = ({
         )}
         {stream.joined &&
           (!sharingScreen ? (
-            <button onClick={handleScreenShare}>Share screen</button>
+            <button className="button" onClick={handleScreenShare}>
+              Share screen
+            </button>
           ) : (
-            <button onClick={handleStopScreenShare}>Stop screen share</button>
+            <button className="button" onClick={handleStopScreenShare}>
+              Stop screen share
+            </button>
           ))}
       </div>
     );
