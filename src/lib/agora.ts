@@ -20,9 +20,9 @@ class Stream {
   userId: number;
   localAudioTrack: IMicrophoneAudioTrack | null = null;
   localVideoTrack: ILocalVideoTrack | null = null;
-  screenVideoTrack: ILocalVideoTrack | null = null;
-  screenAudioTrack: ILocalAudioTrack | null = null;
-  localScreenTrack: [ILocalVideoTrack, ILocalAudioTrack] | null = null;
+  // screenVideoTrack: ILocalVideoTrack | null = null;
+  // screenAudioTrack: ILocalAudioTrack | null = null;
+  localScreenTrack: ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack] | null = null;
 
   constructor(
     appId: string,
@@ -126,7 +126,7 @@ class Stream {
       },
       'auto'
     );
-    // this.localScreenTrack = screenTrack;
+    this.localScreenTrack = screenTrack;
     // this.screenVideoTrack = screenTrack[0];
     // this.screenAudioTrack = screenTrack[1];
 
@@ -138,18 +138,24 @@ class Stream {
     // localPlayerContainer.style.height = '11.25vw';
     // screenTrack[0].play(localPlayerContainer);
     // screenTrack[1].play();
+    return screenTrack;
   };
 
   stopScreenShare = async () => {
     await this.screenClient.unpublish(this.localScreenTrack!);
+    if(Array.isArray(this.localScreenTrack)) {
+      this.localScreenTrack[0]?.close()
+    } else {
+      this.localScreenTrack?.close()
+    }
     const screenElement = document.getElementById(
       (this.userId + 10000).toString()
     );
     screenElement && screenElement?.remove();
     await this.screenClient.leave();
 
-    this.screenAudioTrack?.close();
-    this.screenVideoTrack?.close();
+    // this.screenAudioTrack?.close();
+    // this.screenVideoTrack?.close();
   };
 
   onUserUnpublished = (user: IAgoraRTCRemoteUser) => {
