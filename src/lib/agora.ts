@@ -8,6 +8,8 @@ import AgoraRTC, {
 
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
+const REMOTE_USER_OFFSET = 10000;
+
 class Stream {
   selfMuted: boolean;
   joined: boolean;
@@ -20,9 +22,12 @@ class Stream {
   userId: number;
   localAudioTrack: IMicrophoneAudioTrack | null = null;
   localVideoTrack: ILocalVideoTrack | null = null;
-  screenVideoTrack: ILocalVideoTrack | null = null;
-  screenAudioTrack: ILocalAudioTrack | null = null;
-  localScreenTrack: [ILocalVideoTrack, ILocalAudioTrack] | null = null;
+  // screenVideoTrack: ILocalVideoTrack | null = null;
+  // screenAudioTrack: ILocalAudioTrack | null = null;
+  localScreenTrack:
+    | ILocalVideoTrack
+    | [ILocalVideoTrack, ILocalAudioTrack]
+    | null = null;
 
   constructor(
     appId: string,
@@ -107,7 +112,7 @@ class Stream {
   };
 
   startScreenShare = async () => {
-    const newUserId = +this.userId + 10000;
+    const newUserId = +this.userId + REMOTE_USER_OFFSET;
     const screenToken = generateToken(
       this.appId,
       this.appCertificate,
@@ -126,30 +131,36 @@ class Stream {
       },
       'auto'
     );
-    // this.localScreenTrack = screenTrack;
+    this.localScreenTrack = screenTrack;
     // this.screenVideoTrack = screenTrack[0];
     // this.screenAudioTrack = screenTrack[1];
 
     await this.screenClient.publish(screenTrack);
     // const localPlayerContainer = document.createElement('div');
     // localPlayerContainer.id = this.userId.toString();
-    // localPlayerContainer.textContent = 'Local screen ' + this.userId + 10000;
+    // localPlayerContainer.textContent = 'Local screen ' + this.userId + REMOTE_USER_OFFSET;
     // localPlayerContainer.style.width = '20vw';
     // localPlayerContainer.style.height = '11.25vw';
     // screenTrack[0].play(localPlayerContainer);
     // screenTrack[1].play();
+    return screenTrack;
   };
 
   stopScreenShare = async () => {
     await this.screenClient.unpublish(this.localScreenTrack!);
+    if (Array.isArray(this.localScreenTrack)) {
+      this.localScreenTrack[0]?.close();
+    } else {
+      this.localScreenTrack?.close();
+    }
     const screenElement = document.getElementById(
-      (this.userId + 10000).toString()
+      (this.userId + REMOTE_USER_OFFSET).toString()
     );
     screenElement && screenElement?.remove();
     await this.screenClient.leave();
 
-    this.screenAudioTrack?.close();
-    this.screenVideoTrack?.close();
+    // this.screenAudioTrack?.close();
+    // this.screenVideoTrack?.close();
   };
 
   onUserUnpublished = (user: IAgoraRTCRemoteUser) => {

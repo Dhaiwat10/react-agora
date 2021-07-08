@@ -55,7 +55,20 @@ export const VideoCall: FC<VideoCallProps> = ({
 
   const handleScreenShare = () => {
     setSharingScreen(true);
-    stream!.startScreenShare();
+    stream!
+      .startScreenShare()
+      .then((screenTrack) => {
+        if (Array.isArray(screenTrack)) {
+          screenTrack[0].on('track-ended',async () => {
+            await handleStopScreenShare()
+          });
+        } else {
+          screenTrack.on('track-ended', async () => {
+            await handleStopScreenShare()
+          });
+        }
+      })
+      .catch();
   };
 
   const handleStopScreenShare = async () => {
