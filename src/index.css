@@ -43,3 +43,8 @@
 .mute-btn {
   margin: 10px auto;
 }
+
+.agora-active-stream {
+  width: 40vw !important;
+  height: 22.5vw !important;
+}

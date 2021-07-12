@@ -10,6 +10,8 @@ import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
 const REMOTE_USER_OFFSET = 10000;
 
+const ACTIVE_STREAM_CLASSNAME = 'agora-active-stream';
+
 class Stream {
   selfMuted: boolean;
   joined: boolean;
@@ -28,6 +30,7 @@ class Stream {
     | ILocalVideoTrack
     | [ILocalVideoTrack, ILocalAudioTrack]
     | null = null;
+  activeStreamId: string | null = null;
 
   constructor(
     appId: string,
@@ -56,12 +59,14 @@ class Stream {
     this.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
     await this.client.publish([this.localAudioTrack, this.localVideoTrack]);
     console.log('Logging client after publishing', this.client);
-    // TODO: Create video container on the DOM
     const localPlayerContainer = document.createElement('div');
     localPlayerContainer.id = this.userId.toString();
-    localPlayerContainer.textContent = 'Local user ' + this.userId;
+    // localPlayerContainer.textContent = 'Local user ' + this.userId;
     localPlayerContainer.style.width = '20vw';
     localPlayerContainer.style.height = '11.25vw';
+    localPlayerContainer.addEventListener('click', () => {
+      this.changeActiveStream(localPlayerContainer.id);
+    });
     document
       .getElementsByClassName('agora-streams')[0]
       .append(localPlayerContainer);
@@ -96,7 +101,10 @@ class Stream {
       const remoteVideoTrack = user.videoTrack;
       const remotePlayerContainer = document.createElement('div');
       remotePlayerContainer.id = user.uid.toString();
-      remotePlayerContainer.textContent = 'Remote user ' + user.uid.toString();
+      remotePlayerContainer.addEventListener('click', () => {
+        this.changeActiveStream(remotePlayerContainer.id);
+      });
+      // remotePlayerContainer.textContent = 'Remote user ' + user.uid.toString();
       remotePlayerContainer.style.width = '20vw';
       remotePlayerContainer.style.height = '11.25vw';
       document
@@ -171,6 +179,21 @@ class Stream {
   toggleMuteSelf = () => {
     this.localAudioTrack?.setVolume(this.selfMuted ? 100 : 0);
     this.selfMuted = !this.selfMuted;
+  };
+
+  changeActiveStream = (id: string) => {
+    const currentActiveStream = document.getElementsByClassName(
+      ACTIVE_STREAM_CLASSNAME
+    )[0];
+    currentActiveStream?.classList.remove(ACTIVE_STREAM_CLASSNAME);
+
+    if (this.activeStreamId !== id) {
+      const newActiveStream = document.getElementById(id);
+      newActiveStream?.classList.add(ACTIVE_STREAM_CLASSNAME);
+      this.activeStreamId = id;
+    } else {
+      this.activeStreamId = null;
+    }
   };
 }
 
