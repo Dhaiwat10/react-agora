@@ -2,17 +2,21 @@
   display: flex;
   flex-direction: column;
   margin: auto;
+  background-color: rgb(39, 39, 39);
+  padding: 2rem;
 }
 
 .agora-streams {
   display: grid;
-  grid-template-columns: auto(1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
   margin: auto;
 }
 
 .agora-streams div {
   cursor: pointer;
+  -webkit-order: 2;
+  order: 2;
 }
 
 .button {
@@ -24,6 +28,16 @@
   cursor: pointer;
   font-weight: bold;
   margin: auto;
+  border-radius: 30px;
+}
+
+.button img {
+  height: 2rem;
+  margin: auto;
+}
+
+.muted {
+  background-color: rgb(94, 94, 94);
 }
 
 .button:disabled {
@@ -36,6 +50,10 @@
   background-color: rgb(175, 48, 48);
 }
 
+.leave-btn img {
+  filter: invert();
+}
+
 .join-btn {
   color: black;
 }
@@ -44,7 +62,21 @@
   margin: 10px auto;
 }
 
+.unmuted:hover {
+  background-color: rgb(175, 48, 48);
+}
+
 .agora-active-stream {
   width: 40vw !important;
   height: 22.5vw !important;
+  order: 1 !important;
+  -webkit-order: 1 !important;
+}
+
+.agora-util-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: auto;
+  gap: 20px;
 }

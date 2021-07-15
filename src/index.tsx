@@ -1,7 +1,12 @@
 import React, { FC, useEffect, useState } from 'react';
 import { generateToken, Stream } from './lib/agora';
 import './index.css';
-
+// @ts-ignore
+import exitIcon from './assets/exit.png';
+// @ts-ignore
+import mic from './assets/mic.png';
+// @ts-ignore
+import mutedMic from './assets/muted_mic.png';
 export interface VideoCallProps {
   appId: string;
   appCertificate: string;
@@ -59,12 +64,12 @@ export const VideoCall: FC<VideoCallProps> = ({
       .startScreenShare()
       .then((screenTrack) => {
         if (Array.isArray(screenTrack)) {
-          screenTrack[0].on('track-ended',async () => {
-            await handleStopScreenShare()
+          screenTrack[0].on('track-ended', async () => {
+            await handleStopScreenShare();
           });
         } else {
           screenTrack.on('track-ended', async () => {
-            await handleStopScreenShare()
+            await handleStopScreenShare();
           });
         }
       })
@@ -96,42 +101,51 @@ export const VideoCall: FC<VideoCallProps> = ({
           className="agora-streams"
           style={{ marginBottom: stream?.joined ? '50px' : '0' }}
         ></div>
-        {stream.joined ? (
-          <button
-            disabled={clicked}
-            className="button leave-btn"
-            onClick={handleLeave}
-          >
-            Leave
-          </button>
-        ) : (
-          <button
-            disabled={clicked}
-            className="button join-btn"
-            onClick={handleJoin}
-          >
-            Join
-          </button>
-        )}
-        {stream.joined && (
-          <button
-            disabled={clicked}
-            onClick={handleSelfMute}
-            className="button mute-btn"
-          >
-            {stream.selfMuted ? 'Unmute' : 'Mute'}
-          </button>
-        )}
-        {stream.joined &&
-          (!sharingScreen ? (
-            <button className="button" onClick={handleScreenShare}>
-              Share screen
+
+        <div className="agora-util-buttons">
+          {stream.joined ? (
+            <button
+              disabled={clicked}
+              className="button leave-btn"
+              onClick={handleLeave}
+            >
+              <img src={exitIcon} alt="Leave" />
             </button>
           ) : (
-            <button className="button" onClick={handleStopScreenShare}>
-              Stop screen share
+            <button
+              disabled={clicked}
+              className="button join-btn"
+              onClick={handleJoin}
+            >
+              Join
             </button>
-          ))}
+          )}
+          {stream.joined && (
+            <button
+              disabled={clicked}
+              onClick={handleSelfMute}
+              className={`button mute-btn ${
+                stream.selfMuted ? 'muted' : 'unmuted'
+              }`}
+            >
+              {/* {stream.selfMuted ? 'Unmute' : 'Mute'} */}
+              <img
+                src={stream.selfMuted ? mutedMic : mic}
+                alt={stream.selfMuted ? 'Unmute' : 'Mute'}
+              />
+            </button>
+          )}
+          {stream.joined &&
+            (!sharingScreen ? (
+              <button className="button" onClick={handleScreenShare}>
+                Share screen
+              </button>
+            ) : (
+              <button className="button" onClick={handleStopScreenShare}>
+                Stop screen share
+              </button>
+            ))}
+        </div>
       </div>
     );
   } else {
