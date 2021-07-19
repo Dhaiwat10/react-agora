@@ -3,12 +3,13 @@ const images = require('@rollup/plugin-image');
 
 module.exports = {
   rollup(config, options) {
-    config.plugins.push(
+    config.plugins = [
+      images({ include: ['**/*.png'] }),
       postcss({
         plugins: [],
       }),
-      images({ include: ['**/*.png'] })
-    );
+      ...config.plugins,
+    ];
     return config;
   },
 };
