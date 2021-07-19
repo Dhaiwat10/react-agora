@@ -96,6 +96,7 @@
     "testEnvironment": "jest-environment-jsdom-sixteen"
   },
   "dependencies": {
+    "@rollup/plugin-image": "^2.0.6",
     "agora-access-token": "^2.0.4",
     "agora-rtc-sdk-ng": "^4.5.0"
   },

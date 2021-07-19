@@ -24,8 +24,6 @@ class Stream {
   userId: number;
   localAudioTrack: IMicrophoneAudioTrack | null = null;
   localVideoTrack: ILocalVideoTrack | null = null;
-  // screenVideoTrack: ILocalVideoTrack | null = null;
-  // screenAudioTrack: ILocalAudioTrack | null = null;
   localScreenTrack:
     | ILocalVideoTrack
     | [ILocalVideoTrack, ILocalAudioTrack]
@@ -61,7 +59,6 @@ class Stream {
     console.log('Logging client after publishing', this.client);
     const localPlayerContainer = document.createElement('div');
     localPlayerContainer.id = this.userId.toString();
-    // localPlayerContainer.textContent = 'Local user ' + this.userId;
     localPlayerContainer.style.width = '20vw';
     localPlayerContainer.style.height = '11.25vw';
     localPlayerContainer.addEventListener('click', () => {
@@ -77,14 +74,11 @@ class Stream {
     this.joined = false;
     this.localAudioTrack?.close();
     this.localVideoTrack?.close();
-    // TODO: Destroy local stream container
     const localPlayerContainer = document.getElementById(
       this.userId.toString()
     );
     localPlayerContainer && localPlayerContainer.remove();
-    // TODO: Destroy all remote streams
     this.client.remoteUsers.forEach((user) => {
-      // Destroy the dynamically created DIV containers.
       const playerContainer = document.getElementById(user.uid.toString());
       playerContainer && playerContainer.remove();
     });
@@ -104,7 +98,6 @@ class Stream {
       remotePlayerContainer.addEventListener('click', () => {
         this.changeActiveStream(remotePlayerContainer.id);
       });
-      // remotePlayerContainer.textContent = 'Remote user ' + user.uid.toString();
       remotePlayerContainer.style.width = '20vw';
       remotePlayerContainer.style.height = '11.25vw';
       document
@@ -140,17 +133,8 @@ class Stream {
       'auto'
     );
     this.localScreenTrack = screenTrack;
-    // this.screenVideoTrack = screenTrack[0];
-    // this.screenAudioTrack = screenTrack[1];
 
     await this.screenClient.publish(screenTrack);
-    // const localPlayerContainer = document.createElement('div');
-    // localPlayerContainer.id = this.userId.toString();
-    // localPlayerContainer.textContent = 'Local screen ' + this.userId + REMOTE_USER_OFFSET;
-    // localPlayerContainer.style.width = '20vw';
-    // localPlayerContainer.style.height = '11.25vw';
-    // screenTrack[0].play(localPlayerContainer);
-    // screenTrack[1].play();
     return screenTrack;
   };
 
