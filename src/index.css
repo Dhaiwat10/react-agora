@@ -8,10 +8,10 @@
 
 .agora-streams {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin: auto;
-  grid-auto-flow: column;
+  grid-auto-flow: row;
 }
 
 .agora-streams div {
@@ -68,6 +68,8 @@
 }
 
 .agora-active-stream {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
   width: 40vw !important;
   height: 22.5vw !important;
   order: 1 !important;
